@@ -10,6 +10,11 @@ from os import getenv
 from io import BytesIO
 import html
 from app.helpers import *
+import uuid
+import os
+from werkzeug.utils import secure_filename
+
+UPLOAD_FOLDER = os.path.join('app', 'static', 'uploads')
 
 
 # Create the app
@@ -35,7 +40,7 @@ def show_welcome():
 def show_all_creatures():
     with connect_db() as db:
         sql = """
-            SELECT id, species, name
+            SELECT id, species, name, image_file
             FROM creatures
         """
         params = ()
@@ -47,15 +52,40 @@ def show_all_creatures():
 #-----------------------------------------------------------
 # Help page - Show some help
 #-----------------------------------------------------------
-@app.get("/help")
+@app.get("/add_creature")
 def show_help():
+    return render_template("pages/add_creature.jinja")
 
-    flash("Flash test message")
-    flash("Flash test message with a longer bit of text")
-    flash("Success test message", "success")
-    flash("Error test message", "error")
+@app.post("/add")
+def add_creature():
+    name = request.form.get('name', '').strip()
+    species = request.form.get('species', '').strip()
+    image_file = request.files.get('image', None)
 
-    return render_template("pages/help.jinja")
+    if not image_file or image_file.filename == '':
+        flash("There was a problem uploading the image", "error")
+        return redirect("/")
+
+    # Sanitise filename and make it unique
+    filename = secure_filename(image_file.filename)
+    random_prefix = uuid.uuid4().hex[:12]
+    unique_filename = f"{random_prefix}_{filename}"
+
+    # Get the path of the upload folder
+    filepath = os.path.join(UPLOAD_FOLDER, unique_filename)
+
+    # Save file to disk
+    image_file.save(filepath)
+    with connect_db() as db:
+        sql = """
+            INSERT INTO creatures (name, species, image_file)
+            VALUES (?, ?, ?)
+        """
+        params = (name, species, unique_filename)
+        db.execute(sql, params)
+
+    return redirect('/creatures')
+
 
 
 #===========================================================
