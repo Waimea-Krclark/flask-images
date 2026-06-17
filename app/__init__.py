@@ -87,6 +87,35 @@ def add_creature():
     return redirect('/creatures')
 
 
+@app.get("/remove/<int:id>")
+def remove_creature(id):
+    with connect_db() as db:
+        sql = """
+            SELECT name, image_file
+            FROM creatures WHERE id = ?
+        """
+        params = (id,)
+        creature = db.execute(sql, params).fetchone()
+        
+        if creature['name'] == "Just the two of us guy":
+            flash("You will not harm our lord.", 'error')
+        else:
+            filepath = os.path.join(UPLOAD_FOLDER, creature['image_file'])
+            if os.path.exists(filepath):
+                os.remove(filepath)
+            sql = """
+                DELETE FROM creatures 
+                WHERE id = ?
+            """
+            params = (id,)
+            db.execute(sql, params)
+
+            flash(f"{creature['name']} was taken out back.", 'success')
+    return redirect('/creatures')
+
+
+
+
 
 #===========================================================
 # Configure the app

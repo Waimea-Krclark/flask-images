@@ -4,14 +4,14 @@
 ===========================================================*/
 
 :root {
-    --text-col:         #244;
+    --text-col:         rgb(41, 68, 34);
 
-    --back-col:         #dff;
-    --back-col-dark:    #bdd;
+    --back-col:         rgb(231, 255, 221);
+    --back-col-dark:    rgb(195, 221, 187);
 
-    --border-col:       #355;
+    --border-col:       rgb(66, 85, 51);
 
-    --accent-col:       #e43;
+    --accent-col:       rgb(238, 151, 51);
 }
 
 

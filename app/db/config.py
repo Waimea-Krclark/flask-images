@@ -29,9 +29,7 @@ class CreatureTable:
     """
 
     SEED_DATA = """
-        INSERT INTO creatures (species, name, image_file)
-        VALUES
-            ("Alien",  "Just the two of us guy", "pippa.png")
+        
     """
 
 # Add more table classes here...

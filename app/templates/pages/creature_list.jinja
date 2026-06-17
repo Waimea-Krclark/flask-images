@@ -17,6 +17,7 @@
                 <h3>{{ creature.name }}</h3>
                 <p>Species: <strong>{{ creature.species }}</strong></p>
                 <img src="/static/uploads/{{creature.image_file}}" alt="Image of {{creature.name}}">
+                <a href="/remove/{{creature.id}}">Take out back and put down</a>
             </div>
 
         {% else %}
